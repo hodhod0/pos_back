@@ -17,3 +17,7 @@ def delete_category(cat_id: str):
     result = category_crud.delete_category(cat_id)
     return result
 
+@router.put("/{cat_id}")
+def update_category(cat_id: str, category: Category):
+    result = category_crud.update_category(cat_id, category)
+    return result

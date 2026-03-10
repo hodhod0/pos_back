@@ -1,8 +1,8 @@
 # models/category.py
 from pydantic import BaseModel
 from typing import Optional
-from uuid import UUID, uuid4
+from uuid import UUID
 
 class Category(BaseModel):
-    id: Optional[UUID] = None  # UUID primary key
-    name: str
+    cat_id: Optional[UUID] = None
+    cat_name: str

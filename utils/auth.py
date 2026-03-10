@@ -1,20 +1,21 @@
-from passlib.context import CryptContext
+# utils/auth.py
+
+def hash_password(password: str) -> str:
+    # dummy function for plain text
+    return password
+
+def verify_password(password: str, hashed: str) -> bool:
+    return password == hashed
+
+# JWT functions stay the same
 from datetime import datetime, timedelta
 from jose import jwt
 
-SECRET_KEY = "your-secret-key"
+SECRET_KEY = "supersecretkey"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-def hash_password(password: str):
-    return pwd_context.hash(password)
-
-def verify_password(password, hashed):
-    return pwd_context.verify(password, hashed)
-
-def create_access_token(data: dict):
+def create_access_token(data: dict) -> str:
     to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})

@@ -19,9 +19,3 @@ def create_user(user: User):
         raise HTTPException(status_code=500, detail=result["error"])
     return result
 
-@router.get("/category/{category_id}")
-def read_users_by_category(category_id: UUID):
-    result = user_crud.get_users_by_category(category_id)
-    if "error" in result:
-        raise HTTPException(status_code=500, detail=result["error"])
-    return result

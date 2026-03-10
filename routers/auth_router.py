@@ -1,13 +1,14 @@
 from fastapi import APIRouter
-from models.user import User
-import crud.auth_crud as auth_crud
+from models.user import User, LoginModel
+from services.auth_service import signup, login
 
-router = APIRouter(prefix="/auth", tags=["Authentication"])
+
+router = APIRouter(prefix="/auth", tags=["Auth"])
 
 @router.post("/signup")
-def signup(user: User):
-    return auth_crud.signup(user)
+def register(user: User):
+    return signup(user)
 
 @router.post("/login")
-def login(user: User):
-    return auth_crud.login(user)
+def user_login(user: LoginModel):
+    return login(user)

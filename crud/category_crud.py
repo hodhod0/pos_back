@@ -1,6 +1,7 @@
 from db import get_connection
 from models.category import Category
 import uuid
+from fastapi import  HTTPException
 
 # Get all categories
 def get_all_categories():
@@ -37,11 +38,22 @@ def delete_category(cat_id: str):
 def update_category(cat_id: str, category: Category):
     conn = get_connection()
     cursor = conn.cursor()
+
     cursor.execute(
         "UPDATE categories SET cat_name = %s WHERE cat_id = %s",
         (category.cat_name, cat_id)
     )
-    conn.commit()
-    conn.close()
-    return {"cat_id": cat_id, "message": "Category updated"}
 
+    conn.commit()
+
+    if cursor.rowcount == 0:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Category not found")
+
+    conn.close()
+
+    # ✅ RETURN UPDATED OBJECT
+    return {
+        "cat_id": cat_id,
+        "cat_name": category.cat_name
+    }
