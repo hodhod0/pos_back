@@ -3,11 +3,11 @@ from uuid import UUID
 from typing import Optional
 
 class RoleBase(BaseModel):
-    name: str
-    description: Optional[str] = None
+    sys_name: str
+    sys_description: Optional[str] = None
 
 class RoleCreate(RoleBase):
     pass
 
 class RoleOut(RoleBase):
-    id: UUID
+    sys_id: UUID

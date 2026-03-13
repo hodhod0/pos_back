@@ -1,14 +1,14 @@
 from uuid import uuid4
 from db import get_connection
 
-# Get all roles
+# Get all sys_roles
 def get_all_roles():
     conn = get_connection()
     if not conn:
         return {"error": "Cannot connect to database"}
     try:
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT id, name, description, created_at FROM roles;")
+        cursor.execute("SELECT sys_id, sys_name, sys_description, created_at FROM sys_roles;")
         rows = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -26,29 +26,29 @@ def add_role(role):
         role_id = str(uuid4())
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO roles (id, name, description) VALUES (%s, %s, %s)",
-            (role_id, role.name, getattr(role, "description", None))
+            "INSERT INTO sys_roles (sys_id, sys_name, sys_description) VALUES (%s, %s, %s)",
+            (role_id, role.sys_name, getattr(role, "sys_description", None))
         )
         conn.commit()
         cursor.close()
         conn.close()
         return {
-            "id": role_id,
-            "name": role.name,
-            "description": getattr(role, "description", None)
+            "sys_id": role_id,
+            "sys_name": role.sys_name,
+            "sys_description": getattr(role, "sys_description", None)
         }
     except Exception as e:
         print("❌ DB Error in add_role():", e)
         return {"error": str(e)}
 
-# Get role by ID
+# Get role by sys_id
 def get_role_by_id(role_id):
     conn = get_connection()
     if not conn:
         return {"error": "Cannot connect to database"}
     try:
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT id, name, description, created_at FROM roles WHERE id=%s;", (str(role_id),))
+        cursor.execute("SELECT sys_id, sys_name, sys_description, created_at FROM sys_roles WHERE sys_id=%s;", (str(role_id),))
         row = cursor.fetchone()
         cursor.close()
         conn.close()
@@ -67,8 +67,8 @@ def update_role(role_id, role):
     try:
         cursor = conn.cursor()
         cursor.execute(
-            "UPDATE roles SET name=%s, description=%s WHERE id=%s",
-            (role.name, getattr(role, "description", None), str(role_id))
+            "UPDATE sys_roles SET sys_name=%s, sys_description=%s WHERE sys_id=%s",
+            (role.sys_name, getattr(role, "sys_description", None), str(role_id))
         )
         conn.commit()
         cursor.close()
@@ -85,7 +85,7 @@ def delete_role(role_id):
         return {"error": "Cannot connect to database"}
     try:
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM roles WHERE id=%s;", (str(role_id),))
+        cursor.execute("DELETE FROM sys_roles WHERE sys_id=%s;", (str(role_id),))
         conn.commit()
         cursor.close()
         conn.close()

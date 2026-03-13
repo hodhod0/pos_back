@@ -1,52 +1,43 @@
-from uuid import uuid4
-from db import get_connection
-from models.user import User
-from utils.auth import create_access_token  # we can still use JWT
+from models.set_users import SetUser, LoginModel
+from crud.set_users_crud import add_user, get_user_by_username
+from utils.auth import create_access_token, verify_password
 
-def signup(user: User):
-    try:
-        conn = get_connection()
-        cursor = conn.cursor()
+# Signup
+def signup(user: SetUser):
+    print("Signup payload:", user.dict())
+    existing = get_user_by_username(user.usr_username)
+    if existing:
+        return {"error": "Username already exists"}
+    return add_user(user)
 
-        user_id = str(user.id or uuid4())
-
-        cursor.execute(
-            """
-            INSERT INTO users (id, username, password, full_name, role_id, is_active)
-            VALUES (%s, %s, %s, %s, %s, %s)
-            """,
-            (user_id, user.username, user.password, user.full_name, str(user.role_id), int(user.is_active))
-        )
-
-        conn.commit()
-        return {"message": "User created successfully", "user_id": user_id}
-
-    except Exception as e:
-        return {"error": str(e)}
-
-    finally:
-        conn.close()
-
-
-def login(user):
-    try:
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute(
-            "SELECT password FROM users WHERE username = %s",
-            (user.username,)
-        )
-        row = cursor.fetchone()
-
-        if row and user.password == row[0]:
-            token = create_access_token({"sub": user.username})
-            return {"access_token": token, "token_type": "bearer"}
-
+# Login
+def login(user: LoginModel):
+    print("Login payload received:", user.dict())
+    db_user = get_user_by_username(user.usr_username)
+    if not db_user:
         return {"error": "Invalid username or password"}
 
-    except Exception as e:
-        return {"error": str(e)}
+    print("Submitted password:", user.usr_password)
+    print("DB password:", db_user["usr_password"])
 
-    finally:
-        conn.close()
+    if not verify_password(user.usr_password, db_user["usr_password"]):
+        return {"error": "Invalid username or password"}
+
+    token = create_access_token({
+        "sub": db_user["usr_username"],
+        "usr_id": str(db_user["usr_id"]),
+        "usr_role_id": str(db_user["usr_role_id"])
+    })
+
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "usr_id": str(db_user["usr_id"]),
+            "usr_name": db_user["usr_name"],
+            "usr_username": db_user["usr_username"],
+            "usr_role_id": str(db_user["usr_role_id"]),
+            "usr_active": bool(db_user["usr_active"]),
+            "sys_name": db_user["sys_name"] 
+        }
+    }

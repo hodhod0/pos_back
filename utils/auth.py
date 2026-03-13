@@ -1,16 +1,14 @@
-# utils/auth.py
+from datetime import datetime, timedelta
+from jose import jwt
 
+# Dummy password functions
 def hash_password(password: str) -> str:
-    # dummy function for plain text
     return password
 
 def verify_password(password: str, hashed: str) -> bool:
     return password == hashed
 
-# JWT functions stay the same
-from datetime import datetime, timedelta
-from jose import jwt
-
+# JWT config
 SECRET_KEY = "supersecretkey"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import item_router, category_router, auth_router,user_router,role_router
+from routers import item_router, auth_router, set_categories_router, set_users_router, sys_roles_router
 app = FastAPI(title="POS Backend")
 
 # ------------------------------
@@ -23,10 +23,10 @@ app.add_middleware(
 # Include Routers
 # ------------------------------
 app.include_router(item_router.router)
-app.include_router(category_router.router)
+app.include_router(set_categories_router.router)
 app.include_router(auth_router.router)
-app.include_router(user_router.router)
-app.include_router(role_router.router)
+app.include_router(set_users_router.router)
+app.include_router(sys_roles_router.router)
 
 @app.get("/")
 def root():

@@ -1,13 +1,13 @@
 from db import get_connection
-from models.category import Category
+from models.set_categories import Category
 import uuid
 from fastapi import  HTTPException
 
-# Get all categories
+# Get all set_categories
 def get_all_categories():
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT cat_id, cat_name FROM categories")
+    cursor.execute("SELECT cat_id, cat_name FROM set_categories")
     rows = cursor.fetchall()
     conn.close()
     return [{"cat_id": str(r[0]), "cat_name": r[1]} for r in rows]
@@ -18,7 +18,7 @@ def add_category(category: Category):
     cursor = conn.cursor()
     cat_id = uuid.uuid4()
     cursor.execute(
-        "INSERT INTO categories (cat_id, cat_name) VALUES (%s, %s)",
+        "INSERT INTO set_categories (cat_id, cat_name) VALUES (%s, %s)",
         (str(cat_id), category.cat_name)
     )
     conn.commit()
@@ -29,7 +29,7 @@ def add_category(category: Category):
 def delete_category(cat_id: str):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM categories WHERE cat_id = %s", (cat_id,))
+    cursor.execute("DELETE FROM set_categories WHERE cat_id = %s", (cat_id,))
     conn.commit()
     conn.close()
     return {"cat_id": cat_id, "message": "Category deleted"}
@@ -40,7 +40,7 @@ def update_category(cat_id: str, category: Category):
     cursor = conn.cursor()
 
     cursor.execute(
-        "UPDATE categories SET cat_name = %s WHERE cat_id = %s",
+        "UPDATE set_categories SET cat_name = %s WHERE cat_id = %s",
         (category.cat_name, cat_id)
     )
 
